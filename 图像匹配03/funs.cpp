@@ -1,20 +1,24 @@
 #include "funs.h"
-// #include <iostream>
-// using namespace std;
 
+/* 
+  @函数功能：对两张图片的特征点进行匹配，并返回经过距离筛选后较好的特征点的个数
+  @参数 key_points1：图片1的特征点vector
+  @参数 key_points2：图片2的特征点vector
+  @参数 descriptors1：图片1的特征矩阵
+  @参数 descriptors2：图片2的特征矩阵
+*/
 int Match(const vector<KeyPoint> &key_points1, const vector<KeyPoint> &key_points2,
 	const Mat &descriptors1, const Mat &descriptors2)
 {
 	Ptr<DescriptorMatcher> descriptor_matcher =
 		DescriptorMatcher::create("BruteForce");//创建特征匹配器
 
-												//特征匹配    
-	vector<DMatch> matches;//匹配结果    
-	descriptor_matcher->match(descriptors1, descriptors2, matches);//匹配两个图像的特征矩阵    
-																   // cout << "Match个数：" << matches.size() << endl;
+	//特征匹配
+	vector<DMatch> matches;//匹配结果
+	descriptor_matcher->match(descriptors1, descriptors2, matches);//匹配两个图像的特征矩阵
 
-																   //计算匹配结果中距离的最大和最小值    
-																   //距离是指两个特征向量间的欧式距离，表明两个特征的差异，值越小表明两个特征点越接近    
+	//计算匹配结果中距离的最大和最小值
+	//距离是指两个特征向量间的欧式距离，表明两个特征的差异，值越小表明两个特征点越接近
 	double max_dist = 0;
 	double min_dist = 100;
 	for (int i = 0; i < matches.size(); i++)
@@ -23,33 +27,18 @@ int Match(const vector<KeyPoint> &key_points1, const vector<KeyPoint> &key_point
 		if (dist < min_dist) min_dist = dist;
 		if (dist > max_dist) max_dist = dist;
 	}
-	// cout << "最大距离：" << max_dist << endl;
-	// cout << "最小距离：" << min_dist << endl;
 
-	//筛选出较好的匹配点    
-	vector<DMatch> goodMatches;
+	//通过距离筛选出较好的匹配点    
+	vector<DMatch> goodMatches;		// 存储筛选后较好的匹配点
 	double total_distance = 0.0;
 	for (int i = 0; i < matches.size(); i++)
-	{
+	{	// 小于最大距离的0.2倍被视为较好的匹配点
 		if (matches[i].distance < 0.2 * max_dist)
 		{
 			goodMatches.push_back(matches[i]);
 		}
 	}
-	// cout << "goodMatch个数：" << goodMatches.size() << endl;
-	return goodMatches.size();
-	// cout << "goodMatch个数：" << goodMatches.size() << endl;
-
-	
-	
-	//画出匹配结果    
-	//Mat img_matches;
-	//红色连接的是匹配的特征点对，绿色是未匹配的特征点    
-	//drawMatches(img1, m_LeftKey, img2, m_RightKey, goodMatches, img_matches,
-	//Scalar::all(-1)/*CV_RGB(255,0,0)*/, CV_RGB(0, 255, 0), Mat(), 2);
-
-	//imshow("MatchSUFT", img_matches);
-	//IplImage result = img_matches;
+	return goodMatches.size();		// 返回较好匹配点的个数
 
 	//RANSAC匹配过程  
 	/*vector<DMatch> m_Matches = goodMatches;
@@ -92,6 +81,12 @@ int Match(const vector<KeyPoint> &key_points1, const vector<KeyPoint> &key_point
 	return InlinerCount; */
 }
 
+/*
+ @函数功能：加载存储了图片序列的特征点和特征向量的XML文件至内存，XML文件需放置在项目目录
+ @参数 xml_file_name：XML文件的文件名
+ @参数 key_points：内存中存储特征点vector们的vector
+ @参数 descriptors：内存中存储特征向量的vector
+*/
 void LoadXML(const String & xml_file_name, vector<vector<KeyPoint>>& key_points, vector<Mat>& descriptors)
 {
 	FileStorage fs(xml_file_name, FileStorage::READ);

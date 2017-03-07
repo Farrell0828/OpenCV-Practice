@@ -39,7 +39,7 @@ int main()
 	descriptor_extractor->compute(img1, m_LeftKey, descriptors1);
 	descriptor_extractor->compute(img2, m_RightKey, descriptors2);
 	t = ((double)getTickCount() - t) / getTickFrequency();
-	cout << "SIFT算法用时：" << t << "秒" << endl;
+	cout << "SUFT算法用时：" << t << "秒" << endl;
 
 	cout << "图像1特征描述矩阵大小：" << descriptors1.size()
 		<< "，特征向量个数：" << descriptors1.rows << "，维数：" << descriptors1.cols << endl;
