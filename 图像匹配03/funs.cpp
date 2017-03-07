@@ -38,10 +38,10 @@ int Match(const vector<KeyPoint> &key_points1, const vector<KeyPoint> &key_point
 			goodMatches.push_back(matches[i]);
 		}
 	}
-	return goodMatches.size();		// 返回较好匹配点的个数
+	//return goodMatches.size();		// 返回较好匹配点的个数
 
 	//RANSAC匹配过程  
-	/*vector<DMatch> m_Matches = goodMatches;
+	vector<DMatch> m_Matches = goodMatches;
 	// 分配空间  
 	int ptCount = (int)m_Matches.size();
 	Mat p1(ptCount, 2, CV_32F);
@@ -66,7 +66,6 @@ int Match(const vector<KeyPoint> &key_points1, const vector<KeyPoint> &key_point
 	findFundamentalMat(p1, p2, m_RANSACStatus, FM_RANSAC);
 
 	// 计算野点个数  
-
 	int OutlinerCount = 0;
 	for (int i = 0; i<m_RANSACStatus.size(); i++)
 	{
@@ -75,10 +74,10 @@ int Match(const vector<KeyPoint> &key_points1, const vector<KeyPoint> &key_point
 			OutlinerCount++;
 		}
 	}
-	int InlinerCount = ptCount - OutlinerCount;   // 计算内点  
-												  // cout << "内点数为：" << InlinerCount << endl;
 
-	return InlinerCount; */
+	int InlinerCount = ptCount - OutlinerCount;   // 计算内点
+
+	return InlinerCount;
 }
 
 /*
